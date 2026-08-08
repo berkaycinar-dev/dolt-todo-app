@@ -1,16 +1,66 @@
-# React + Vite
+# Dolt.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Günlük görevleri ve alışkanlıkları tek bir yerden takip etmek için geliştirdiğim, React tabanlı bir görev/alışkanlık yönetim panosu.
 
-Currently, two official plugins are available:
+**Canlı demo:** _Yakında eklenecek_
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Özellikler
 
-## React Compiler
+- **Dashboard** — toplam/tamamlanan/devam eden görev sayıları ve günlük tamamlanma oranını gösteren dairesel grafik
+- **Today (Bugünün Görevleri)** — görev ekleme, silme, tamamlandı olarak işaretleme
+  - Başlığa göre arama
+  - Tümü / Aktif / Tamamlanan filtreleme
+  - Her görev için kategori (İş, Kişisel, Kişisel Gelişim, Diğer) ve tarih
+- **Daily Routine (Günlük Rutin)** — aylık takvim görünümünde alışkanlık takibi, ay ay ileri/geri gezinme, yeni rutin ekleme/silme
+- **Dark Mode** — açık/koyu tema geçişi
+- **Kalıcı veri** — tüm görev ve rutin verileri tarayıcının `localStorage`'ında saklanır, sayfa yenilendiğinde kaybolmaz
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Kullanılan Teknolojiler
 
-## Expanding the ESLint configuration
+- React 19
+- Vite
+- Vanilla CSS (herhangi bir UI kütüphanesi kullanılmadı)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Kurulum
+
+```bash
+git clone https://github.com/kullaniciadin/dolt-todo-app.git
+cd dolt-todo-app
+npm install
+npm run dev
+```
+
+## Klasör Yapısı
+
+```
+src/
+├── components/
+│   ├── AddTaskForm.jsx    # Yeni görev ekleme formu
+│   ├── Header.jsx         # Üst bar, dark mode toggle
+│   ├── Sidebar.jsx        # Sayfa navigasyonu
+│   ├── Statcard.jsx       # Dashboard istatistik kartı
+│   └── TaskList.jsx       # Görev listesi
+├── App.jsx                # Ana state ve sayfa yönlendirme mantığı
+└── main.jsx
+```
+
+## Bilinen Eksikler / Devam Eden Geliştirme
+
+Proje aktif geliştirme aşamasında. Şu an sidebar'da görünüp henüz işlevsel olmayan sayfalar:
+
+- [ ] Calendar
+- [ ] Archive
+- [ ] Projects
+- [ ] Settings
+
+## Yol Haritası
+
+- [ ] Yukarıdaki sekmelerin tamamlanması
+- [ ] Backend + veritabanı entegrasyonu (localStorage yerine kalıcı, cihazlar arası senkronize veri)
+- [ ] Kullanıcı girişi / kimlik doğrulama
+- [ ] Görev önceliklendirme ve hatırlatıcılar
+- [ ] Mobil uyumlu (responsive) tasarım iyileştirmeleri
+
+## Ekran Görüntüsü
+
+_Ekran görüntüleri yakında eklenecek_
