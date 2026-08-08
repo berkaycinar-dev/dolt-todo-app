@@ -101,6 +101,7 @@ function App() {
   const [routineChecks, setRoutineChecks] = useState(getInitialRoutineChecks);
   const [routineMonth, setRoutineMounth] = useState(new Date());
   const [newRoutineTitle, setNewRoutineTitle] = useState("");
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -144,6 +145,23 @@ function App() {
     (_, index) => index + 1,
   );
 
+  const calendarYear = calendarMonth.getFullYear();
+  const calendarMonthIndex = calendarMonth.getMonth();
+
+  const firstDayOfCalendarMonth = new Date(calendarYear, calendarMonthIndex, 1);
+  const daysInCalendarMonth = new Date(
+    calendarYear,
+    calendarMonthIndex + 1,
+    0,
+  ).getDate();
+
+  const calendarStartDay = firstDayOfCalendarMonth.getDay();
+
+  const calendarDays = Array.from(
+    { length: daysInCalendarMonth },
+    (_, index) => index + 1,
+  );
+
   function getRoutineKey(routineId, day) {
     const monthKey = `${routineYear}-${routineMonthIndex + 1}`;
     return `${monthKey}-${routineId}-${day}`;
@@ -175,21 +193,21 @@ function App() {
   }
 
   function deleteRoutine(id) {
-    const filteredRoutines = routines.filter((routine) => routine.id !==id);
+    const filteredRoutines = routines.filter((routine) => routine.id !== id);
     setRoutines(filteredRoutines);
 
     const updatedChecks = {};
 
-    Object.keys(routineChecks).forEach((key)=> {
+    Object.keys(routineChecks).forEach((key) => {
       const keyParts = key.split("-");
       const routineIdFromKey = Number(keyParts[2]);
 
       if (routineIdFromKey !== id) {
         updatedChecks[key] = routineChecks[key];
       }
-     });
+    });
 
-     setRoutineChecks(updatedChecks);
+    setRoutineChecks(updatedChecks);
   }
 
   const filteredTasks = tasks.filter((task) => {
@@ -355,7 +373,9 @@ function App() {
                       <td>
                         <div className="routine-name-cell">
                           <span>{routine.title}</span>
-                          <button onClick={() => deleteRoutine(routine.id)}>Sil</button>
+                          <button onClick={() => deleteRoutine(routine.id)}>
+                            Sil
+                          </button>
                         </div>
                       </td>
 
@@ -434,6 +454,106 @@ function App() {
               />
             </section>
           </>
+        )}
+
+        {activePage === "Calendar" && (
+          <section className="calendar-page">
+            <div className="routine-header">
+              <div>
+                <h2>Takvim</h2>
+                <p>
+                  {calendarMonth.toLocaleDateString("tr-TR", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+
+              <div className="routine-month-actions">
+                <button
+                  onClick={() =>
+                    setCalendarMonth(
+                      new Date(calendarYear, calendarMonthIndex - 1, 1),
+                    )
+                  }
+                >
+                  Önceki Ay
+                </button>
+
+                <button
+                  onClick={() =>
+                    setCalendarMonth(
+                      new Date(calendarYear, calendarMonthIndex + 1, 1),
+                    )
+                  }
+                >
+                  Sonraki Ay
+                </button>
+              </div>
+            </div>
+
+            <div className="calendar-grid">
+              {["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"].map(
+                (dayName) => (
+                  <div className="calendar-day-name" key={dayName}>
+                    {dayName}
+                  </div>
+                ),
+              )}
+
+              {Array.from({ length: calendarStartDay }).map((_, index) => (
+                <div
+                  className="calendar-cell empty"
+                  key={`empty-${index}`}
+                ></div>
+              ))}
+
+              {calendarDays.map((day) => (
+                <div
+                  className="calendar-cell"
+                  key={day}
+                  onClick={() => {
+                    const selectedDate = `${calendarYear}-${String(calendarMonthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                    setNewTaskDate(selectedDate);
+                    setActivePage("Today");
+                  }}
+                >
+                  <strong>{day}</strong>
+
+                  <div className="calendar-tasks">
+                    {tasks
+                      .filter((task) => {
+                        const date = `${calendarYear}-${String(calendarMonthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                        return task.date === date;
+                      })
+                      .map((task) => (
+                        <div className="calendar-task" key={task.id}>
+                          {task.title}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activePage === "Archive" && (
+          <section className="archive-page">
+            <div className="dashboard-welcome">
+              <h2>Arşiv</h2>
+              <p>
+                Bugüne kadar eklenmiş ve silinmemiş tüm görevler burada
+                listelenir.
+              </p>
+            </div>
+
+            <TaskList
+              tasks={tasks}
+              toggleTask={toggleTask}
+              deleteTask={deleteTask}
+            />
+          </section>
         )}
       </main>
     </div>

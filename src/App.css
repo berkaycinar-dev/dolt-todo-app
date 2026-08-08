@@ -425,3 +425,85 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
+.calendar-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #e5e7eb;
+  background-color: white;
+}
+
+.calendar-day-name,
+.calendar-cell {
+  min-height: 90px;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.calendar-day-name {
+  min-height: auto;
+  font-weight: bold;
+  text-align: center;
+  color: #6b7280;
+}
+
+.calendar-cell.empty {
+  background-color: #f9fafb;
+}
+
+.dark-mode .calendar-grid,
+.dark-mode .calendar-cell,
+.dark-mode .calendar-day-name {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+.calendar-tasks {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.calendar-task {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background-color: #ede9fe;
+  color: #5b21b6;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.dark-mode .calendar-task {
+  background-color: #312e81;
+  color: #ddd6fe;
+}
+.calendar-cell:not(.empty) {
+  cursor: pointer;
+}
+
+.calendar-cell:not(.empty):hover {
+  background-color: #f5f3ff;
+}
+
+.dark-mode .calendar-cell:not(.empty):hover {
+  background-color: #111827;
+}.calendar-cell:not(.empty) {
+  cursor: pointer;
+}
+
+.calendar-cell:not(.empty):hover {
+  background-color: #f5f3ff;
+}
+
+.dark-mode .calendar-cell:not(.empty):hover {
+  background-color: #111827;
+}
+.archive-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
