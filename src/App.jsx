@@ -5,6 +5,7 @@ import TaskList from "./components/TaskList";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import AddTaskForm from "./components/AddTaskForm";
+import { renderToReadableStream } from "react-dom/server";
 
 const initialTasks = [
   {
@@ -13,6 +14,7 @@ const initialTasks = [
     category: "Work",
     date: "2026-08-05",
     completed: false,
+    projectId: null,
   },
   {
     id: 2,
@@ -20,6 +22,7 @@ const initialTasks = [
     category: "Personal",
     date: "2026-08-05",
     completed: false,
+    projectId: null,
   },
   {
     id: 3,
@@ -27,6 +30,7 @@ const initialTasks = [
     category: "Self Development",
     date: "2026-08-05",
     completed: false,
+    projectId: null,
   },
   {
     id: 4,
@@ -34,6 +38,7 @@ const initialTasks = [
     category: "Health",
     date: "2026-08-05",
     completed: true,
+    projectId: null,
   },
   {
     id: 5,
@@ -41,6 +46,7 @@ const initialTasks = [
     category: "Personal",
     date: "2026-08-06",
     completed: false,
+    projectId: null,
   },
 ];
 const initialRoutines = [
@@ -57,6 +63,27 @@ const initialRoutines = [
     title: "Exercise",
   },
 ];
+
+const initialProjects = [
+  {
+    id: 1,
+    name: "ToDoApp",
+  },
+  {
+    id: 2,
+    name: "Portfolio",
+  },
+];
+
+function getInitialProjects() {
+  const savedProjects = localStorage.getItem("projects");
+
+  if (savedProjects) {
+    return JSON.parse(savedProjects);
+  }
+
+  return initialProjects;
+}
 
 function getInitialRoutines() {
   const savedRoutines = localStorage.getItem("routines");
@@ -102,6 +129,11 @@ function App() {
   const [routineMonth, setRoutineMounth] = useState(new Date());
   const [newRoutineTitle, setNewRoutineTitle] = useState("");
   const [calendarMonth, setCalendarMonth] = useState(new Date());
+  const [archiveStatusFilter, setArchiveStatusFilter] = useState("all");
+  const [archiveStartDate, setArchiveStartDate] = useState("");
+  const [archiveEndDate, setArchiveEndDate] = useState("");
+  const [projects, setProjects] = useState(getInitialProjects);
+  const [newProjectName, setNewProjectsName] = useState("");
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -114,6 +146,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("routines", JSON.stringify(routines));
   }, [routines]);
+
+  useEffect(() => {
+    localStorage.setItem("projects", JSON.stringify(projects));
+  }, [projects]);
 
   const allTaskCount = tasks.length;
   const completedTasksCount = tasks.filter((task) => task.completed).length;
@@ -223,6 +259,20 @@ function App() {
     return matchesSearch && matchesFilter;
   });
 
+  const filteredArchiveTasks = tasks.filter((task) => {
+    const matchesStatus =
+      archiveStatusFilter === "all" ||
+      (archiveStatusFilter === "completed" && task.completed) ||
+      (archiveStatusFilter === "active" && !task.completed);
+
+    const matchesStartDate =
+      archiveStartDate === "" || task.date >= archiveStartDate;
+
+    const matchesEndDate = archiveEndDate === "" || task.date <= archiveEndDate;
+
+    return matchesStatus && matchesStartDate && matchesEndDate;
+  });
+
   function toggleTask(id) {
     const updatedTasks = tasks.map((task) => {
       if (task.id === id) {
@@ -251,6 +301,7 @@ function App() {
       category: newTaskCategory,
       date: newTaskDate,
       completed: false,
+      projectId: null,
     };
 
     setTasks([newTask, ...tasks]);
@@ -262,6 +313,27 @@ function App() {
   function deleteTask(id) {
     const filteredTasks = tasks.filter((task) => task.id !== id);
     setTasks(filteredTasks);
+  }
+
+  function addProject(event) {
+    event.preventDefault();
+
+    if (newProjectName.trim() === "") {
+      return;
+    }
+
+    const newProject = {
+      id: Date.now(),
+      name: newProjectName,
+    };
+
+    setProjects([...projects, newProject]);
+    setNewProjectsName("");
+  }
+
+  function deleteProject(id) {
+    const filteredProjects = projects.filter((project) => project.id !== id);
+    setProjects(filteredProjects);
   }
 
   return (
@@ -548,11 +620,78 @@ function App() {
               </p>
             </div>
 
+            <div className="archive-filters">
+              <select
+                value={archiveStatusFilter}
+                onChange={(event) => setArchiveStatusFilter(event.target.value)}
+              >
+                <option value="all">Tüm Durumlar</option>
+                <option value="active">Devam Eden</option>
+                <option value="completed">Tamamlanan</option>
+              </select>
+
+              <input
+                type="date"
+                value={archiveStartDate}
+                onChange={(event) => setArchiveStartDate(event.target.value)}
+              />
+
+              <input
+                type="date"
+                value={archiveEndDate}
+                onChange={(event) => setArchiveEndDate(event.target.value)}
+              />
+
+              <button
+                onClick={() => {
+                  setArchiveStatusFilter("all");
+                  setArchiveStartDate("");
+                  setArchiveEndDate("");
+                }}
+              >
+                Temizle
+              </button>
+            </div>
+
             <TaskList
-              tasks={tasks}
+              tasks={filteredArchiveTasks}
               toggleTask={toggleTask}
               deleteTask={deleteTask}
             />
+          </section>
+        )}
+
+        {activePage === "Projects" && (
+          <section className="projects-page">
+            <div className="dashboard-welcome">
+              <h2>Projeler</h2>
+              <p>Projelerine özel görev klasörleri oluşturabilirsin.</p>
+            </div>
+
+            <form className="project-form" onSubmit={addProject}>
+              <input
+                type="text"
+                placeholder="Yeni proje adı..."
+                value={newProjectName}
+                onChange={(event) => setNewProjectsName(event.target.value)}
+              />
+
+              <button type="submit">Proje Ekle</button>
+            </form>
+            <div className="project-list">
+              {projects.map((project) => (
+                <div className="project-card" key={project.id}>
+                  <div className="project-card-header">
+                    <h3>{project.name}</h3>
+                    <button onClick={() => deleteProject(project.id)}>
+                      Sil
+                    </button>
+                  </div>
+
+                  <p>Bu proje için görevler sonraki adımda eklenecek.</p>
+                </div>
+              ))}
+            </div>
           </section>
         )}
       </main>
