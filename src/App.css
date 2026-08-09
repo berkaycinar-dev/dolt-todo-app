@@ -507,3 +507,38 @@ body {
   flex-direction: column;
   gap: 20px;
 }
+.archive-filters {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: white;
+}
+
+.archive-filters select,
+.archive-filters input {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.archive-filters button {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #7c3aed;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.dark-mode .archive-filters {
+  background-color: #1f2937;
+}
+
+.dark-mode .archive-filters select,
+.dark-mode .archive-filters input {
+  background-color: #111827;
+  color: #f9fafb;
+  border-color: #374151;
+}
